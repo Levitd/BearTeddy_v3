@@ -1,0 +1,6 @@
+{
+  "port": 8088,
+  "mongoUri": "mongodb+srv://levitd71:Blackshadow1@cluster0.vrtawqw.mongodb.net/app?retryWrites=true&w=majority",
+  "accessSecret" : "super_secret_from_backend_bear_teddy",
+  "refreshSecret" : "super_refresh_key_bear_teddy"
+}
