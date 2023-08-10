@@ -1,11 +1,14 @@
 const express = require('express')
-const Users = require('../models/User')
+const User = require('../models/User')
 const auth  = require('../middleware/auth.middleware')
 const router = express.Router({mergeParams:true})
+const cors = require('cors');
+const mongoose = require('mongoose')
 
-router.get('/',async (req,res)=>{
+router.get('/',cors(),async (req,res)=>{
+    const {_id} = req.query
     try {
-        const list = await Users.find({},{email:0,password: 0})
+        const list = await User.find(_id ? {_id:_id} :{},{password: 0})
         res.status(200).send(list)
     } catch   {
         res.status(500).json({
@@ -14,12 +17,14 @@ router.get('/',async (req,res)=>{
     }
 })
 
-router.patch('/:userId', auth, async (req,res)=>{
+router.patch('/:userId', auth,cors(), async (req,res)=>{
     try {
         const {userId} = req.params
 
         if (userId===req.user._id){
-            const updatedUser = await Users.findByIdAndUpdate(userId, req.body, {new:true})
+            const id =new mongoose.Types.ObjectId(userId)
+            console.log(req.body)
+            const updatedUser = await User.findByIdAndUpdate(id, req.body, {new:true})
             res.send(updatedUser) // status(200) - можно не отсылать
         } else {
             res.status(401).json({

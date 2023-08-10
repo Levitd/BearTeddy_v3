@@ -5,25 +5,25 @@ const User = require('../models/User')
 const {generateUserData} = require("../utils/helper");
 const tokenService= require('../services/token.services')
 const router = express.Router({mergeParams:true})
+const cors = require('cors');
 
-const signUpValidations = [
+const signUpValidations = []
 
-]
-
-router.post('/signUp', [
+router.post('/signUp',cors(), [
     check('email','Некорректный email').isEmail(),
     check('password','Минимальная длина паролья 8 символов').isLength({min:8}),
     async (req,res)=>{
     try{
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) return res.status(400).json({
-            errors:{
+        const error = validationResult(req)
+        if (!error.isEmpty()) return res.status(400).json({
+            error:{
                 message: 'INVALID_DATA',
                 code: 400
-                // errors:errors.array()
+                // error:error.array()
             }
         })
         const {email, password} = req.body
+        console.log(email,password)
         const existingUser = await User.findOne({email})
         if (existingUser){
              return res.status(400).json({
@@ -42,33 +42,34 @@ router.post('/signUp', [
         const tokens = tokenService.generate({_id: newUser._id})
         await tokenService.save(newUser._id, tokens.refreshToken)
 
-        res.status(201).send({...tokens, userId: newUser._id})
+        res.status(201).send({...tokens, localId: newUser._id})
     } catch (e) {
         res.status(500).json({
             message: 'На сервере произошла ошибка, попробуйте позже...',
-            errors:e
+            error:e
         })
     }
 }])
-router.post('/signInWithPassword',[
+router.post('/signInWithPassword',cors(),[
     check('email','Email некорректный').normalizeEmail().isEmail(),
     check('password','Пароль не может быть пустым').exists(),
     async (req,res)=>{
     try {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) return res.status(400).json({
-            errors:{
+        const error = validationResult(req)
+        if (!error.isEmpty()) return res.status(400).json({
+            error:{
                 message: 'INVALID_DATA',
                 code: 400
-                // errors:errors.array()
+                // error:error.array()
             }
         })
 
         const {email, password} = req.body
+        console.log(email,password)
         const existingUser = await User.findOne({email})
         if (!existingUser) {
             return res.status(400).send({
-                errors:{
+                error:{
                     message: 'EMAIL_NOT_FOUND',
                     code: 400
                 }
@@ -79,7 +80,7 @@ router.post('/signInWithPassword',[
 
         if(!isPasswordEqual){
             return res.status(400).send({
-                errors:{
+                error:{
                     message: 'INVALID_PASSWORD',
                     code: 400
                 }
@@ -89,7 +90,8 @@ router.post('/signInWithPassword',[
         const tokens = tokenService.generate({_id: existingUser._id})
         await tokenService.save(existingUser._id, tokens.refreshToken)
 
-        res.status(200).send({...tokens, userId: existingUser._id})
+        console.log({...tokens, localId: existingUser._id})
+        res.status(200).send({...tokens, localId: existingUser._id})
 
     } catch (e) {
         res.status(500).json({
@@ -102,11 +104,14 @@ router.post('/signInWithPassword',[
 function isTokenInvalid(data, dbToken){
     return !data || !dbToken || data._id!==dbToken?.user?.toString()
 }
-router.post('/token',async (req,res)=>{
+router.post('/token', cors(), async (req,res)=>{
     try {
         const {refresh_token: refreshToken} = req.body
+        if(!refreshToken){
+            res.status(205).json({message:"Refresh token not get"})
+            return
+        }
         const data=await tokenService.validateRefresh(refreshToken)
-
         const dbToken = await tokenService.findToken(refreshToken)
         if( isTokenInvalid(data, dbToken) ){
             return res.status(401).json({message:"Unauthorized"})
@@ -114,7 +119,7 @@ router.post('/token',async (req,res)=>{
         const tokens = tokenService.generate({_id: data._id})
         await tokenService.save(data._id, tokens.refreshToken)
 
-        res.status(200).send({...tokens, userId:data._id})
+        res.status(200).send({...tokens, localId:data._id})
     } catch (e) {
         res.status(500).json({
             message: 'На сервере произошла ошибка, попробуйте позже...'

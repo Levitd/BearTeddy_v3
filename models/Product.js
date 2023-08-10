@@ -11,6 +11,7 @@ const schema = new Schema({
     price:Number,
     rrpolicy:String,
     shipping:Number,
+    viewed:Number,
     image:[
         {name:String,token:{type: String}}
     ]

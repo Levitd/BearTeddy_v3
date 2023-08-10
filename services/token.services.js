@@ -7,7 +7,7 @@ class TokenServices{
             expiresIn: '1h'
         })
         const refreshToken = jwt.sign(payload,  config.get('refreshSecret'))
-        return {accessToken, refreshToken, expiresIn: 3600}
+        return {idToken:accessToken, refreshToken, expiresIn: 3600}
     }
     async save(user, refreshToken){
         const data = await Token.findOne({user})
@@ -18,18 +18,19 @@ class TokenServices{
         const  token = await Token.create({user, refreshToken})
         return token
     }
-    async validateRefresh(refreshToken){
+    validateRefresh(refreshToken){
         try {
             return jwt.verify(refreshToken, config.get('refreshSecret'))
         } catch (e) {
             return e
         }
     }
-    async validateAccess(accessToken){
+    //Убрал ассинхронность
+    validateAccess(accessToken){
         try {
             return jwt.verify(accessToken, config.get('accessSecret'))
         } catch (e) {
-            return null
+            return e
         }
     }
     async findToken(refreshToken){

@@ -4,9 +4,14 @@ const config = require('config')
 const chalk = require('chalk')
 const initDB = require('./startUp/initDB')
 const routes = require('./routes')
+const cors = require('cors');
 
 const app=express()
 
+// app.use(cors({
+//     origin: '*'
+// }));
+app.use(cors());
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 app.use('/api',routes)

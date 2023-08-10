@@ -4,7 +4,8 @@ const schema = new Schema({
     country:String,
     url:String,
     name: String,
-    user_id:{type:String,required:true}
+    aboutShop:String,
+    user_id:{type:Schema.Types.ObjectId, ref:'User', required:true},
 },{
     timestamps:true
 })

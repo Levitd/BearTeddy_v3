@@ -1,10 +1,10 @@
 const {Schema, model} = require('mongoose')
 
 const schema = new Schema({
-    product_id:{type:Schema.Types.ObjectId, ref:'Product', required:true},
+    product_id:{type:Schema.Types.ObjectId, ref:'Product'},
     ip:String,
     country:String,
-    useId:{type:Schema.Types.ObjectId, ref:'User', required:true},
+    user_id:String,
 },{
     timestamps:true
 })
