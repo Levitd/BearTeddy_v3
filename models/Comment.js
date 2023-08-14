@@ -1,11 +1,13 @@
 const {Schema, model} = require('mongoose')
 
 const schema = new Schema({
-    "content":{type:String, required:true},
-    // На чтей станице коментарий
-    "pageId":{type:Schema.Types.ObjectId, ref:'User', required: true},
+    content:{type:String, required:true},
+    // На каком товаре коментарий
+    product_id:{type:Schema.Types.ObjectId, ref:'Product', required: true},
     // Кто оставил комментарий
-    "UserId":{type:Schema.Types.ObjectId, ref:'User', required: true},
+    user_id:{type:Schema.Types.ObjectId, ref:'User', required: true},
+    // к какому комментарию коментарий - цепочка
+    parent_comment_id:String
 },{
     timestamps:{createdAr:'created_at'}
 })
