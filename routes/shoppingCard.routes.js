@@ -7,12 +7,10 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 
 router.get('/',auth, cors(), async (req,res)=>{
-    console.log('shopCard get')
     try {
         let list
         if (req.user._id){
             list = await ShoppingCard.find({user_id:req.user._id})
-            console.log(list,req.user._id)
         } else {
             res.status(401).json({message:'only for authorized user'})
         }

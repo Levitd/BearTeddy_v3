@@ -4,8 +4,8 @@ const config = require('config')
 const chalk = require('chalk')
 const initDB = require('./startUp/initDB')
 const routes = require('./routes')
-const cors = require('cors');
-
+const cors = require('cors')
+const path = require('path')
 const app=express()
 
 // app.use(cors({
@@ -18,11 +18,19 @@ app.use('/api',routes)
 
 const PORT =config.get('port') ?? 8080
 
-// if (process.env.NODE_ENV==='production'){
-//     console.log('Production')
-// } else {
-//     console.log('Development')
-// }
+if (process.env.NODE_ENV==='production'){
+    console.log('Production')
+} else {
+    console.log('Development')
+}
+
+if (process.env.NODE_ENV==='production'){
+    app.use('/', express.static(path.join(__dirname, 'client')))
+    const indexPath = path.join(__dirname, 'client','index.html')
+    app.get('*',(reg,res)=>{
+        res.sendFile(indexPath)
+    })
+}
 
 async function start (){
     try {

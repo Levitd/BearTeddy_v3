@@ -1,7 +1,7 @@
 const {Schema, model} = require('mongoose')
 
 const schema = new Schema({
-    content:{type:String, required:true},
+    comment:{type:String, required:true},
     // На каком товаре коментарий
     product_id:{type:Schema.Types.ObjectId, ref:'Product', required: true},
     // Кто оставил комментарий
