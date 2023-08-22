@@ -14,9 +14,9 @@ router.route('/:productId')
             if (productId === "array") {
                 const newArra = JSON.parse(req.query.array)
                 // // В body передаем массив с id нужных товаров
-                list = await Product.find({ _id: { $in: newArra } })
+                list = await Product.find({ _id: { $in: newArra } },{liked_user_id:0})
             } else {
-                list = await Product.findOne({ _id: productId })
+                list = await Product.findOne({ _id: productId },{liked_user_id:0})
             }
             res.status(200).send(list)
         } catch {
@@ -49,7 +49,7 @@ router
         skip = !skip ? 0 : skip
         // console.log(req.query,skip)
         try {
-            const list = await Product.find(user_id ? { user_id: user_id } : filter ? JSON.parse(filter) : {}).sort({ createdAt: -1 }).skip(skip).limit(config.get('productGetLimit'))
+            const list = await Product.find(user_id ? { user_id: user_id } : filter ? JSON.parse(filter) : {},{liked_user_id:0}).sort({ createdAt: -1 }).skip(skip).limit(config.get('productGetLimit'))
             res.status(200).send(list)
         } catch {
             res.status(500).json({
