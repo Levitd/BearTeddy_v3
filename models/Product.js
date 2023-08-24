@@ -14,10 +14,13 @@ const schema = new Schema({
     viewed:Number,
     quantity: Number,
     liked:Number,
-    liked_user_id:[{type:Schema.Types.ObjectId, ref:'User', required:true}],
+    liked_statistic:[new Schema({user_id:String, action:Number},{
+        timestamps:true
+    })
+        ],
     image:[
         {name:String,token:{type: String}}
-    ]
+        ]
 },{
     timestamps:true
 })

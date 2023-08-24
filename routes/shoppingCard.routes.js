@@ -56,6 +56,7 @@ router.patch('/', auth, cors(), async (req,res)=>{
             }
         } else {
             res.status(401).json({
+                code: 401,
                 message: 'Unauthorized'
             })
         }
